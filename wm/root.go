@@ -13,7 +13,7 @@ func (wm *WM) setupRoot() {
 		xproto.EventMaskSubstructureRedirect |
 		xproto.EventMaskEnterWindow
 
-	if err := xwindow.New(wm.x, wm.x.RootWin()).Listen(eventMask); err != nil {
+	if err := xwindow.New(wm.X, wm.X.RootWin()).Listen(eventMask); err != nil {
 		log.Fatalf("Could not listen to root window events: %s", err)
 	}
 }

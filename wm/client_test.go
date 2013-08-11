@@ -12,8 +12,8 @@ import (
 func TestClientRunner(t *testing.T) {
 	test.Run(t, func() {
 		wm := createWM()
-		wm.x = test.X
-		wm.addWorkspace(workspace.New(wm.screenRect()))
+		wm.X = test.X
+		wm.AddWorkspace(workspace.New(wm.ScreenRect()))
 		testManage(t, wm)
 		testHasClient(t, wm)
 		testFindClient(t, wm)
@@ -22,20 +22,20 @@ func TestClientRunner(t *testing.T) {
 }
 
 func testManage(t *testing.T, wm *WM) {
-	clients := len(wm.clients)
-	assert.NoError(t, wm.manage(test.NewClient()), "Manage client")
-	assert.Equal(t, clients+1, len(wm.clients), "Number of clients")
+	clients := len(wm.Clients)
+	assert.NoError(t, wm.Manage(test.NewClient()), "Manage client")
+	assert.Equal(t, clients+1, len(wm.Clients), "Number of clients")
 }
 
 func testHasClient(t *testing.T, wm *WM) {
 	client := test.NewClient()
-	wm.manage(client)
-	assert.True(t, wm.hasClient(client), "HasClient")
+	wm.Manage(client)
+	assert.True(t, wm.HasClient(client), "HasClient")
 }
 
 func testFindClient(t *testing.T, wm *WM) {
 	client := test.NewClient()
-	wm.manage(client)
+	wm.Manage(client)
 
 	_, found, err := wm.findClient(client.Id())
 	assert.NoError(t, err, "findClient")
@@ -44,8 +44,8 @@ func testFindClient(t *testing.T, wm *WM) {
 
 func testUnmanage(t *testing.T, wm *WM) {
 	client := test.NewClient()
-	wm.manage(client)
-	wm.unmanage(client.Id())
-	assert.False(t, wm.hasClient(client), "HasClient")
-	assert.Error(t, wm.unmanage(client.Id()))
+	wm.Manage(client)
+	wm.Unmanage(client.Id())
+	assert.False(t, wm.HasClient(client), "HasClient")
+	assert.Error(t, wm.Unmanage(client.Id()))
 }

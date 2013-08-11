@@ -11,12 +11,12 @@ import (
 )
 
 func (wm *WM) setupKeys() error {
-	keybind.Initialize(wm.x)
+	keybind.Initialize(wm.X)
 
-	for key, _ := range wm.config.Keybinds {
+	for key, _ := range wm.Config.Keybinds {
 		log.Printf("handling key %s\n", key)
-		if err := keybind.KeyPressFun(wm.keyPressFun).Connect(wm.x,
-			wm.x.RootWin(), key, true); err != nil {
+		if err := keybind.KeyPressFun(wm.keyPressFun).Connect(wm.X,
+			wm.X.RootWin(), key, true); err != nil {
 			log.Print(err)
 		}
 	}
@@ -26,7 +26,7 @@ func (wm *WM) setupKeys() error {
 
 func (wm *WM) keyPressFun(xu *xgbutil.XUtil, e xevent.KeyPressEvent) {
 	modStr := keybind.ModifierString(e.State)
-	keyStr := keybind.LookupString(wm.x, e.State, e.Detail)
+	keyStr := keybind.LookupString(wm.X, e.State, e.Detail)
 
 	var keys string
 
@@ -40,8 +40,8 @@ func (wm *WM) keyPressFun(xu *xgbutil.XUtil, e xevent.KeyPressEvent) {
 
 	log.Printf("got key %s\n", keys)
 
-	if command, ok := wm.config.Keybinds[keys]; ok {
-		if err := wm.executeCommand(command.Cmd, command.Args); err != nil {
+	if command, ok := wm.Config.Keybinds[keys]; ok {
+		if err := wm.Cmd.Execute(command.Cmd, command.Args); err != nil {
 			log.Print(err)
 		}
 	}

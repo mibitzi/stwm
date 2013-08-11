@@ -12,15 +12,15 @@ import (
 func (wm *WM) setupEvents() {
 	xevent.MapRequestFun(func(xu *xgbutil.XUtil, ev xevent.MapRequestEvent) {
 		log.Printf("MapRequestEvent: %d\n", ev.Window)
-		if err := wm.manage(client.New(wm.x, ev.Window)); err != nil {
+		if err := wm.Manage(client.New(wm.X, ev.Window)); err != nil {
 			log.Print(err)
 		}
-	}).Connect(wm.x, wm.x.RootWin())
+	}).Connect(wm.X, wm.X.RootWin())
 }
 
 func (wm *WM) unmapNotifyFun(xu *xgbutil.XUtil, ev xevent.UnmapNotifyEvent) {
 	log.Printf("UnmapNotifyEvent: %d\n", ev.Window)
-	if err := wm.unmanage(ev.Window); err != nil {
+	if err := wm.Unmanage(ev.Window); err != nil {
 		log.Print(err)
 	}
 }
@@ -28,7 +28,7 @@ func (wm *WM) unmapNotifyFun(xu *xgbutil.XUtil, ev xevent.UnmapNotifyEvent) {
 func (wm *WM) destroyNotifyFun(xu *xgbutil.XUtil,
 	ev xevent.DestroyNotifyEvent) {
 	log.Printf("DestroyNotifyEvent: %d\n", ev.Window)
-	if err := wm.unmanage(ev.Window); err != nil {
+	if err := wm.Unmanage(ev.Window); err != nil {
 		log.Print(err)
 	}
 }

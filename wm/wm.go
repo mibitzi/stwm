@@ -12,17 +12,19 @@ import (
 )
 
 type WM struct {
-	x       *xgbutil.XUtil
-	clients []*client.Client
-	curWs   *workspace.Workspace
-	wspaces []*workspace.Workspace
-	config  *config.Config
+	X       *xgbutil.XUtil
+	Clients []*client.Client
+	CurWs   *workspace.Workspace
+	Wspaces []*workspace.Workspace
+	Config  *config.Config
+	Cmd     CommandHandler
 }
 
 func SetupWM() *WM {
 	wm := createWM()
 
-	wm.config = config.New()
+	wm.Config = config.New()
+	wm.Cmd = NewCommandHandler()
 
 	wm.connect()
 	wm.setupRoot()
@@ -35,20 +37,20 @@ func SetupWM() *WM {
 
 func createWM() *WM {
 	return &WM{
-		x:       nil,
-		clients: make([]*client.Client, 0),
-		curWs:   nil,
-		wspaces: make([]*workspace.Workspace, 0),
+		X:       nil,
+		Clients: make([]*client.Client, 0),
+		CurWs:   nil,
+		Wspaces: make([]*workspace.Workspace, 0),
 	}
 
 }
 
 func (wm *WM) Start() {
-	xevent.Main(wm.x)
+	xevent.Main(wm.X)
 }
 
 func (wm *WM) Destroy() {
-	wm.x.Conn().Close()
+	wm.X.Conn().Close()
 }
 
 func (wm *WM) connect() {
@@ -57,5 +59,5 @@ func (wm *WM) connect() {
 		log.Fatal(err)
 	}
 
-	wm.x = x
+	wm.X = x
 }

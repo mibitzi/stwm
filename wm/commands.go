@@ -6,12 +6,17 @@ import (
 	"strings"
 )
 
-func (wm *WM) executeCommand(cmd string, args []string) error {
+type CommandHandler map[string]func([]string) error
 
-	handlers := make(map[string]func([]string) error)
-	handlers["exec"] = wm.cmdExec
+func NewCommandHandler() CommandHandler {
+	handler := make(CommandHandler)
+	handler["exec"] = handler.CmdExec
 
-	if fn, ok := handlers[cmd]; ok {
+	return handler
+}
+
+func (handler CommandHandler) Execute(cmd string, args []string) error {
+	if fn, ok := handler[cmd]; ok {
 		if err := fn(args); err != nil {
 			return err
 		}
@@ -23,7 +28,7 @@ func (wm *WM) executeCommand(cmd string, args []string) error {
 }
 
 // cmdExec executes the arguments given to it as shell commands.
-func (wm *WM) cmdExec(args []string) error {
+func (handler CommandHandler) CmdExec(args []string) error {
 	cmd := exec.Command("/bin/sh", "-c", strings.Join(args, ""))
 	if err := cmd.Start(); err != nil {
 		return err

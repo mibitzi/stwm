@@ -5,13 +5,13 @@ import (
 )
 
 func (wm *WM) setupWorkspaces() {
-	wm.addWorkspace(workspace.New(wm.screenRect()))
+	wm.AddWorkspace(workspace.New(wm.ScreenRect()))
 }
 
-func (wm *WM) addWorkspace(ws *workspace.Workspace) {
-	wm.wspaces = append(wm.wspaces, ws)
+func (wm *WM) AddWorkspace(ws *workspace.Workspace) {
+	wm.Wspaces = append(wm.Wspaces, ws)
 
-	if len(wm.wspaces) == 1 {
-		wm.curWs = ws
+	if len(wm.Wspaces) == 1 {
+		wm.CurWs = ws
 	}
 }

@@ -9,33 +9,33 @@ import (
 	"github.com/mibitzi/stwm/client"
 )
 
-func (wm *WM) manage(client *client.Client) error {
-	if wm.curWs == nil {
+func (wm *WM) Manage(client *client.Client) error {
+	if wm.CurWs == nil {
 		return errors.New("No current workspace available")
 	}
 
-	if wm.hasClient(client) {
+	if wm.HasClient(client) {
 		return errors.New("Client already managed")
 	}
 
-	wm.clients = append(wm.clients, client)
-	xevent.UnmapNotifyFun(wm.unmapNotifyFun).Connect(wm.x, client.Win.Id)
-	xevent.DestroyNotifyFun(wm.destroyNotifyFun).Connect(wm.x, client.Win.Id)
+	wm.Clients = append(wm.Clients, client)
+	xevent.UnmapNotifyFun(wm.unmapNotifyFun).Connect(wm.X, client.Win.Id)
+	xevent.DestroyNotifyFun(wm.destroyNotifyFun).Connect(wm.X, client.Win.Id)
 
-	wm.curWs.AddClient(client)
+	wm.CurWs.AddClient(client)
 	client.Win.Map()
 
 	return nil
 }
 
-func (wm *WM) unmanage(id xproto.Window) error {
+func (wm *WM) Unmanage(id xproto.Window) error {
 	if idx, client, err := wm.findClient(id); err != nil {
 		return err
 	} else {
-		wm.clients[idx] = wm.clients[len(wm.clients)-1]
-		wm.clients = wm.clients[:len(wm.clients)-1]
+		wm.Clients[idx] = wm.Clients[len(wm.Clients)-1]
+		wm.Clients = wm.Clients[:len(wm.Clients)-1]
 
-		for _, ws := range wm.wspaces {
+		for _, ws := range wm.Wspaces {
 			if ws.HasClient(client) {
 				if err := ws.RemoveClient(client); err != nil {
 					return err
@@ -46,7 +46,7 @@ func (wm *WM) unmanage(id xproto.Window) error {
 	}
 }
 
-func (wm *WM) hasClient(client *client.Client) bool {
+func (wm *WM) HasClient(client *client.Client) bool {
 	if _, _, err := wm.findClient(client.Win.Id); err != nil {
 		return false
 	}
@@ -54,7 +54,7 @@ func (wm *WM) hasClient(client *client.Client) bool {
 }
 
 func (wm *WM) findClient(id xproto.Window) (int, *client.Client, error) {
-	for i, c := range wm.clients {
+	for i, c := range wm.Clients {
 		if c.Id() == id {
 			return i, c, nil
 		}
