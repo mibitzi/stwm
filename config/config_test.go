@@ -8,7 +8,8 @@ import (
 
 func TestParseContents(t *testing.T) {
 	contents := "keybind Mod4-return exec urxvt\n" +
-		"keybind Mod4-q kill\n"
+		"keybind Mod4-q kill\n" +
+		"borderWidth 0xffffff\n"
 
 	config := New()
 	assert.NoError(t, config.parseContents([]byte(contents)), "Parse contents")
@@ -23,4 +24,8 @@ func TestParseContents(t *testing.T) {
 	assert.True(t, ok, "Second keybind")
 	assert.Equal(t, secondKey.Cmd, "kill", "Second cmd")
 	assert.Equal(t, len(secondKey.Args), 0, "Second args")
+
+	border, err := config.IntVar("borderWidth")
+	assert.NoError(t, err)
+	assert.Equal(t, border, 0xffffff)
 }

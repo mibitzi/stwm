@@ -5,4 +5,8 @@ func (config *Config) setDefaults() {
 		Cmd:  "exec",
 		Args: []string{"urxvt"},
 	}
+
+	config.Vars["borderWidth"] = "2"
+	config.Vars["activeWindowColor"] = "0x0000ff"
+	config.Vars["inactiveWindowColor"] = "0x000000"
 }

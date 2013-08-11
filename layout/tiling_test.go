@@ -10,7 +10,7 @@ import (
 	"github.com/mibitzi/stwm/test"
 )
 
-func TestClientRunner(t *testing.T) {
+func TestTilingRunner(t *testing.T) {
 	test.Run(t, func() {
 		testHasClient(t)
 		testAddClient(t)
@@ -31,7 +31,7 @@ func testAddClient(t *testing.T) {
 
 	client := test.NewClient()
 	tiling.AddClient(client)
-	geom := client.Win.Geom
+	geom := client.Geom
 
 	assert.Equal(t, 0, geom.X(), "first window x")
 	assert.Equal(t, 0, geom.Y(), "first window y")
@@ -40,7 +40,7 @@ func testAddClient(t *testing.T) {
 
 	client = test.NewClient()
 	tiling.AddClient(client)
-	geom = client.Win.Geom
+	geom = client.Geom
 
 	assert.Equal(t, 0, geom.X(), "second window x")
 	assert.Equal(t, rect.Height()/2, geom.Y(), "second window y")
@@ -61,7 +61,7 @@ func testRemoveClient(t *testing.T) {
 	assert.NoError(t, tiling.RemoveClient(client0), "RemoveClient")
 	assert.False(t, tiling.HasClient(client0), "HasClient")
 
-	geom := client1.Win.Geom
+	geom := client1.Geom
 	assert.Equal(t, 0, geom.X(), "window x")
 	assert.Equal(t, 0, geom.Y(), "window y")
 	assert.Equal(t, rect.Width(), geom.Width(), "window width")

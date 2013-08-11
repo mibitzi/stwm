@@ -103,7 +103,7 @@ func (tiling *Tiling) apply() {
 	for _, col := range tiling.columns {
 		top := 0
 		for _, row := range col.rows {
-			row.client.Win.MoveResize(left, top, col.size, row.size)
+			row.client.MoveResize(left, top, col.size, row.size)
 			top += row.size
 		}
 		left += col.size

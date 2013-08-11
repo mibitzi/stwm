@@ -24,6 +24,7 @@ func (wm *WM) Manage(client *client.Client) error {
 
 	wm.CurWs.AddClient(client)
 	client.Win.Map()
+	wm.Focus(client)
 
 	return nil
 }
@@ -60,4 +61,17 @@ func (wm *WM) findClient(id xproto.Window) (int, *client.Client, error) {
 		}
 	}
 	return -1, nil, errors.New("Client not found")
+}
+
+func (wm *WM) Focus(client *client.Client) {
+	if client == wm.Focused {
+		return
+	}
+
+	if wm.Focused != nil {
+		wm.Focused.Unfocus()
+	}
+
+	wm.Focused = client
+	wm.Focused.Focus()
 }

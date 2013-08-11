@@ -11,11 +11,13 @@ type Command struct {
 
 type Config struct {
 	Keybinds map[string]*Command
+	Vars     map[string]string
 }
 
 func New() *Config {
 	config := &Config{
 		Keybinds: make(map[string]*Command),
+		Vars:     make(map[string]string),
 	}
 
 	config.setDefaults()

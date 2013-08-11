@@ -12,7 +12,8 @@ import (
 func (wm *WM) setupEvents() {
 	xevent.MapRequestFun(func(xu *xgbutil.XUtil, ev xevent.MapRequestEvent) {
 		log.Printf("MapRequestEvent: %d\n", ev.Window)
-		if err := wm.Manage(client.New(wm.X, ev.Window)); err != nil {
+		if err := wm.Manage(client.New(wm.X, ev.Window,
+			wm.Config)); err != nil {
 			log.Print(err)
 		}
 	}).Connect(wm.X, wm.X.RootWin())

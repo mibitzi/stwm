@@ -14,6 +14,7 @@ import (
 type WM struct {
 	X       *xgbutil.XUtil
 	Clients []*client.Client
+	Focused *client.Client
 	CurWs   *workspace.Workspace
 	Wspaces []*workspace.Workspace
 	Config  *config.Config
@@ -37,9 +38,7 @@ func SetupWM() *WM {
 
 func createWM() *WM {
 	return &WM{
-		X:       nil,
 		Clients: make([]*client.Client, 0),
-		CurWs:   nil,
 		Wspaces: make([]*workspace.Workspace, 0),
 	}
 

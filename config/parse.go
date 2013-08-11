@@ -31,7 +31,13 @@ func (config *Config) parseParts(parts []string) error {
 	parser["keybind"] = config.parseKeybind
 
 	if fn, ok := parser[parts[0]]; ok {
-		fn(parts[1:])
+		if err := fn(parts[1:]); err != nil {
+			return err
+		}
+	} else if len(parts) == 2 {
+		if err := config.parseVar(parts); err != nil {
+			return err
+		}
 	} else {
 		return fmt.Errorf("Unknown config type: %s", parts[0])
 	}
@@ -52,6 +58,16 @@ func (config *Config) parseKeybind(parts []string) error {
 	}
 
 	config.Keybinds[strings.ToLower(parts[0])] = command
+
+	return nil
+}
+
+func (config *Config) parseVar(parts []string) error {
+	if len(parts) != 2 {
+		return errors.New("Variables can only have two parts")
+	}
+
+	config.Vars[parts[0]] = parts[1]
 
 	return nil
 }
