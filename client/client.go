@@ -36,12 +36,12 @@ func New(xu *xgbutil.XUtil, wid xproto.Window, config *config.Config) *Client {
 		xproto.EventMaskFocusChange |
 		xproto.EventMaskPropertyChange)
 
-	if borderWidth, err := config.IntVar("borderWidth"); err != nil {
+	if border, err := config.IntVar("borderWidth"); err != nil {
 		log.Print(err)
 	} else {
 		xproto.ConfigureWindow(client.X.Conn(), client.Win.Id,
 			uint16(xproto.ConfigWindowBorderWidth),
-			[]uint32{uint32(borderWidth)})
+			[]uint32{uint32(border)})
 	}
 
 	return client
@@ -65,20 +65,15 @@ func (client *Client) Unfocus() {
 }
 
 func (client *Client) setBorderColor() {
-	var varName string
+	var color int
 
 	if client.Focused {
-		varName = "activeWindowColor"
+		color, _ = client.config.IntVar("activeWindowColor")
 	} else {
-		varName = "inactiveWindowColor"
+		color, _ = client.config.IntVar("inactiveWindowColor")
 	}
 
-	if color, err := client.config.IntVar(varName); err != nil {
-		log.Print(err)
-	} else {
-		log.Printf("set borderpixel: %v", color)
-		client.Win.Change(xproto.CwBorderPixel, uint32(color))
-	}
+	client.Win.Change(xproto.CwBorderPixel, uint32(color))
 }
 
 func (client *Client) MoveResize(x, y, width, height int) {

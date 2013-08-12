@@ -9,7 +9,8 @@ import (
 func TestParseContents(t *testing.T) {
 	contents := "keybind Mod4-return exec urxvt\n" +
 		"keybind Mod4-q kill\n" +
-		"borderWidth 0xffffff\n"
+		"activeWindowColor 0xffffff\n" +
+		"font Droid Sans Mono\n"
 
 	config := New()
 	assert.NoError(t, config.parseContents([]byte(contents)), "Parse contents")
@@ -25,7 +26,11 @@ func TestParseContents(t *testing.T) {
 	assert.Equal(t, secondKey.Cmd, "kill", "Second cmd")
 	assert.Equal(t, len(secondKey.Args), 0, "Second args")
 
-	border, err := config.IntVar("borderWidth")
+	color, err := config.IntVar("activeWindowColor")
 	assert.NoError(t, err)
-	assert.Equal(t, border, 0xffffff)
+	assert.Equal(t, color, 0xffffff)
+
+	font, err := config.StrVar("font")
+	assert.NoError(t, err)
+	assert.Equal(t, font, "Droid Sans Mono")
 }

@@ -2,7 +2,6 @@ package config
 
 import (
 	"errors"
-	"fmt"
 	"log"
 	"strings"
 )
@@ -14,7 +13,7 @@ func (config *Config) parseContents(contents []byte) error {
 		parts := strings.Fields(line)
 
 		if err := config.parseParts(parts); err != nil {
-			log.Println("Error parsing line: %s", line)
+			log.Printf("Error parsing line: %s\n", line)
 			log.Print(err)
 		}
 	}
@@ -34,12 +33,10 @@ func (config *Config) parseParts(parts []string) error {
 		if err := fn(parts[1:]); err != nil {
 			return err
 		}
-	} else if len(parts) == 2 {
+	} else {
 		if err := config.parseVar(parts); err != nil {
 			return err
 		}
-	} else {
-		return fmt.Errorf("Unknown config type: %s", parts[0])
 	}
 
 	return nil
@@ -63,11 +60,11 @@ func (config *Config) parseKeybind(parts []string) error {
 }
 
 func (config *Config) parseVar(parts []string) error {
-	if len(parts) != 2 {
-		return errors.New("Variables can only have two parts")
+	if len(parts) < 2 {
+		return errors.New("Variables must have a value")
 	}
 
-	config.Vars[parts[0]] = parts[1]
+	config.Vars[parts[0]] = strings.Join(parts[1:], " ")
 
 	return nil
 }
