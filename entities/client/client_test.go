@@ -5,11 +5,11 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/mibitzi/stwm/test"
+	"github.com/mibitzi/stwm/test/window"
 )
 
 func TestNew(t *testing.T) {
-	win := test.NewWindow()
+	win := window.New()
 	client, err := New(win)
 	assert.NoError(t, err, "new: New client")
 	assert.NotNil(t, client, "new: New client")
@@ -17,7 +17,7 @@ func TestNew(t *testing.T) {
 }
 
 func TestShowHide(t *testing.T) {
-	win := test.NewWindow()
+	win := window.New()
 	client, _ := New(win)
 	assert.False(t, client.IsVisible(), "initial IsVisible()")
 	client.Show()

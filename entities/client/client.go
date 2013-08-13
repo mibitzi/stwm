@@ -17,6 +17,10 @@ func New(win window.Window) (*Client, error) {
 	return client, nil
 }
 
+func (client *Client) Manage() error {
+	return client.win.Manage()
+}
+
 func (client *Client) Id() uint {
 	return uint(client.win.Id())
 }

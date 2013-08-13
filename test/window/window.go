@@ -1,7 +1,8 @@
-package test
+package window
 
 import (
 	"github.com/mibitzi/stwm/rect"
+	"github.com/mibitzi/stwm/window"
 )
 
 type Window struct {
@@ -12,7 +13,7 @@ type Window struct {
 
 var numWindows uint = 0
 
-func NewWindow() *Window {
+func New() window.Window {
 	numWindows += 1
 
 	return &Window{
@@ -20,6 +21,10 @@ func NewWindow() *Window {
 		geom:    rect.New(0, 0, 0, 0),
 		visible: false,
 	}
+}
+
+func (win *Window) Manage() error {
+	return nil
 }
 
 func (win *Window) Id() uint {

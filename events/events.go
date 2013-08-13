@@ -26,3 +26,10 @@ func (events *Events) MapRequest(win window.Window) error {
 
 	return nil
 }
+
+func (events *Events) Unmanage(id uint) error {
+	if err := events.WM.Unmanage(id); err != nil {
+		return err
+	}
+	return nil
+}

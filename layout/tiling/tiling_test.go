@@ -6,12 +6,12 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/mibitzi/stwm/rect"
-	"github.com/mibitzi/stwm/test"
+	"github.com/mibitzi/stwm/test/window"
 )
 
 func TestHasClient(t *testing.T) {
 	tiling := New(rect.New(0, 0, 1000, 1000))
-	client := test.NewWindow()
+	client := window.New()
 	tiling.AddClient(client)
 	assert.True(t, tiling.HasClient(client.Id()), "HasClient")
 }
@@ -20,7 +20,7 @@ func TestAddClient(t *testing.T) {
 	rect := rect.New(0, 0, 1000, 500)
 	tiling := New(rect)
 
-	client := test.NewWindow()
+	client := window.New()
 	tiling.AddClient(client)
 	geom := client.Geom()
 
@@ -29,7 +29,7 @@ func TestAddClient(t *testing.T) {
 	assert.Equal(t, rect.Width(), geom.Width(), "first window width")
 	assert.Equal(t, rect.Height(), geom.Height(), "first window height")
 
-	client = test.NewWindow()
+	client = window.New()
 	tiling.AddClient(client)
 	geom = client.Geom()
 
@@ -44,8 +44,8 @@ func TestRemoveClient(t *testing.T) {
 	rect := rect.New(0, 0, 1000, 500)
 	tiling := New(rect)
 
-	client0 := test.NewWindow()
-	client1 := test.NewWindow()
+	client0 := window.New()
+	client1 := window.New()
 	tiling.AddClient(client0)
 	tiling.AddClient(client1)
 

@@ -42,14 +42,38 @@ func (ws *Workspace) AddClient(client *client.Client) error {
 	return nil
 }
 
+// RemoveClients removes a client from this workspace.
+func (ws *Workspace) RemoveClient(client *client.Client) error {
+	idx, err := ws.findClient(client.Id())
+	if err != nil {
+		return err
+	}
+
+	// No need to keep the order
+	ws.clients[idx] = ws.clients[len(ws.clients)-1]
+	ws.clients = ws.clients[:len(ws.clients)-1]
+
+	if err = ws.tiling.RemoveClient(client); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // HasClient checks if this workspace has a client with the given id.
 func (ws *Workspace) HasClient(id uint) bool {
-	for _, c := range ws.clients {
+	_, err := ws.findClient(id)
+	return err == nil
+}
+
+// findClient returns the index of a client.
+func (ws *Workspace) findClient(id uint) (int, error) {
+	for idx, c := range ws.clients {
 		if c.Id() == id {
-			return true
+			return idx, nil
 		}
 	}
-	return false
+	return -1, errors.New("workspace: client not found")
 }
 
 // IsVisible returns true if this workspace is currently visible.

@@ -10,15 +10,17 @@ import (
 	"github.com/BurntSushi/xgbutil/xevent"
 
 	"github.com/mibitzi/stwm/window"
+	"github.com/mibitzi/stwm/window/xwindow"
 )
 
 type Events interface {
 	MapRequest(window.Window) error
+	xwindow.Events
 }
 
 func (xgb *Xgb) setupEvents() {
 	xevent.MapRequestFun(func(xu *xgbutil.XUtil, ev xevent.MapRequestEvent) {
-		win := window.New(xu, ev.Window)
+		win := xwindow.New(xgb.X, ev.Window, xgb.events)
 		if err := xgb.events.MapRequest(win); err != nil {
 			log.Print(err)
 		}
