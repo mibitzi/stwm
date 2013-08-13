@@ -3,15 +3,21 @@ package xgb
 import (
 	"github.com/BurntSushi/xgbutil"
 	"github.com/BurntSushi/xgbutil/xevent"
+
+	"github.com/mibitzi/stwm/config"
 )
 
 type Xgb struct {
 	X      *xgbutil.XUtil
-	events Events
+	Events Events
+	Config *config.Config
 }
 
-func New(events Events) (*Xgb, error) {
-	xgb := &Xgb{events: events}
+func New(events Events, config *config.Config) (*Xgb, error) {
+	xgb := &Xgb{
+		Events: events,
+		Config: config,
+	}
 
 	if err := xgb.connect(); err != nil {
 		return nil, err

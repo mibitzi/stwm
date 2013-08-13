@@ -1,14 +1,14 @@
 package xgb
 
 import (
-	//"fmt"
-	"log"
-	//"strings"
+	"fmt"
+	"strings"
 
 	"github.com/BurntSushi/xgbutil"
-	//"github.com/BurntSushi/xgbutil/keybind"
+	"github.com/BurntSushi/xgbutil/keybind"
 	"github.com/BurntSushi/xgbutil/xevent"
 
+	"github.com/mibitzi/stwm/log"
 	"github.com/mibitzi/stwm/window"
 	"github.com/mibitzi/stwm/window/xwindow"
 )
@@ -16,56 +16,37 @@ import (
 type Events interface {
 	MapRequest(window.Window) error
 	xwindow.Events
+	Command(string) error
 }
 
 func (xgb *Xgb) setupEvents() {
 	xevent.MapRequestFun(func(xu *xgbutil.XUtil, ev xevent.MapRequestEvent) {
-		win := xwindow.New(xgb.X, ev.Window, xgb.events)
-		if err := xgb.events.MapRequest(win); err != nil {
-			log.Print(err)
+		win := xwindow.New(xgb.X, ev.Window, xgb.Events)
+		if err := xgb.Events.MapRequest(win); err != nil {
+			log.Error(err)
 		}
 	}).Connect(xgb.X, xgb.X.RootWin())
 
-	//wm.setupKeys()
+	xgb.setupKeys()
 }
 
-/*func (wm *WM) setupKeys() error {
-	keybind.Initialize(wm.X)
+func (xgb *Xgb) setupKeys() error {
+	keybind.Initialize(xgb.X)
 
-	for key, _ := range wm.Config.Keybinds {
-		log.Printf("handling key %s\n", key)
-		if err := keybind.KeyPressFun(wm.keyPressFun).Connect(wm.X,
-			wm.X.RootWin(), key, true); err != nil {
-			log.Print(err)
+	for key, _ := range xgb.Config.Keybinds {
+		log.Debug("handling key", key)
+		if err := keybind.KeyPressFun(xgb.keyPressFun).Connect(xgb.X,
+			xgb.X.RootWin(), key, true); err != nil {
+			log.Error(err)
 		}
 	}
 
 	return nil
 }
 
-func (wm *WM) setupClientEvents(client *Client) {
-	xevent.UnmapNotifyFun(wm.unmapNotifyFun).Connect(wm.X, client.Win.Id)
-	xevent.DestroyNotifyFun(wm.destroyNotifyFun).Connect(wm.X, client.Win.Id)
-}
-
-func (wm *WM) unmapNotifyFun(xu *xgbutil.XUtil, ev xevent.UnmapNotifyEvent) {
-	log.Printf("UnmapNotifyEvent: %d\n", ev.Window)
-	if err := wm.Unmanage(ev.Window); err != nil {
-		log.Print(err)
-	}
-}
-
-func (wm *WM) destroyNotifyFun(xu *xgbutil.XUtil,
-	ev xevent.DestroyNotifyEvent) {
-	log.Printf("DestroyNotifyEvent: %d\n", ev.Window)
-	if err := wm.Unmanage(ev.Window); err != nil {
-		log.Print(err)
-	}
-}
-
-func (wm *WM) keyPressFun(xu *xgbutil.XUtil, e xevent.KeyPressEvent) {
+func (xgb *Xgb) keyPressFun(xu *xgbutil.XUtil, e xevent.KeyPressEvent) {
 	modStr := keybind.ModifierString(e.State)
-	keyStr := keybind.LookupString(wm.X, e.State, e.Detail)
+	keyStr := keybind.LookupString(xgb.X, e.State, e.Detail)
 
 	var keys string
 
@@ -77,11 +58,9 @@ func (wm *WM) keyPressFun(xu *xgbutil.XUtil, e xevent.KeyPressEvent) {
 
 	keys = strings.ToLower(keys)
 
-	log.Printf("got key %s\n", keys)
-
-	if command, ok := wm.Config.Keybinds[keys]; ok {
-		if err := wm.Cmd.Execute(command.Cmd, command.Args); err != nil {
-			log.Print(err)
+	if command, ok := xgb.Config.Keybinds[keys]; ok {
+		if err := xgb.Events.Command(command); err != nil {
+			log.Error(err)
 		}
 	}
-}*/
+}

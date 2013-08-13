@@ -9,11 +9,11 @@ import (
 // Manage adds a new managed client to this wm.
 func (wm *WM) Manage(client *client.Client) error {
 	if wm.HasClient(client.Id()) {
-		return errors.New("wm: manage: already managing a client with this id")
+		return errors.New("wm.manage: already managing a client with this id")
 	}
 
 	if len(wm.Workspaces) == 0 {
-		return errors.New("wm: manage: no workspaces available")
+		return errors.New("wm.manage: no workspaces available")
 	}
 
 	if err := wm.CurWs.AddClient(client); err != nil {

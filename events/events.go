@@ -7,11 +7,19 @@ import (
 )
 
 type Events struct {
-	WM *wm.WM
+	WM  *wm.WM
+	Cmd CommandHandler
 }
 
-func New(wm *wm.WM) *Events {
-	return &Events{WM: wm}
+type CommandHandler interface {
+	Execute(string) error
+}
+
+func New(wm *wm.WM, cmd CommandHandler) *Events {
+	return &Events{
+		WM:  wm,
+		Cmd: cmd,
+	}
 }
 
 func (events *Events) MapRequest(win window.Window) error {
@@ -32,4 +40,8 @@ func (events *Events) Unmanage(id uint) error {
 		return err
 	}
 	return nil
+}
+
+func (events *Events) Command(str string) error {
+	return events.Cmd.Execute(str)
 }

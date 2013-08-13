@@ -1,12 +1,13 @@
 package main
 
 import (
-	"log"
-
+	"github.com/mibitzi/stwm/commands"
+	"github.com/mibitzi/stwm/config"
 	"github.com/mibitzi/stwm/entities/wm"
 	"github.com/mibitzi/stwm/entities/workspace"
 	"github.com/mibitzi/stwm/events"
 	"github.com/mibitzi/stwm/layout/tiling"
+	"github.com/mibitzi/stwm/log"
 	"github.com/mibitzi/stwm/rect"
 	"github.com/mibitzi/stwm/xgb"
 )
@@ -14,13 +15,20 @@ import (
 func main() {
 	var err error
 
+	log.Level = log.DEBUG
+
+	cfg := config.New()
+
 	wm, err := wm.New()
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer wm.Destroy()
 
-	xgb, err := xgb.New(events.New(wm))
+	cmd := commands.New(wm)
+	ev := events.New(wm, cmd)
+
+	xgb, err := xgb.New(ev, cfg)
 	if err != nil {
 		log.Fatal(err)
 	}
