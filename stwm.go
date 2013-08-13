@@ -8,7 +8,6 @@ import (
 	"github.com/mibitzi/stwm/events"
 	"github.com/mibitzi/stwm/layout/tiling"
 	"github.com/mibitzi/stwm/log"
-	"github.com/mibitzi/stwm/rect"
 	"github.com/mibitzi/stwm/xgb"
 )
 
@@ -34,7 +33,7 @@ func main() {
 	}
 	defer xgb.Destroy()
 
-	wm.AddWorkspace(workspace.New("1", tiling.New(rect.New(0, 0, 1024, 768))))
+	wm.AddWorkspace(workspace.New("1", tiling.New(xgb.ScreenRect())))
 
 	xgb.EnterMain()
 }
