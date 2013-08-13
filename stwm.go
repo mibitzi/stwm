@@ -1,21 +1,32 @@
-package stwm
+package main
 
 import (
-	"github.com/BurntSushi/xgbutil"
+	"log"
+
 	"github.com/mibitzi/stwm/entities/wm"
+	"github.com/mibitzi/stwm/entities/workspace"
+	"github.com/mibitzi/stwm/events"
+	"github.com/mibitzi/stwm/layout/tiling"
+	"github.com/mibitzi/stwm/rect"
+	"github.com/mibitzi/stwm/xgb"
 )
 
 func main() {
-	wm := wm.New()
+	var err error
+
+	wm, err := wm.New()
+	if err != nil {
+		log.Fatal(err)
+	}
 	defer wm.Destroy()
 
-	connect()
-
-	setupEvents()
-}
-
-func connect() {
-	if xu, err := xgbutil.NewConnDisplay(":1"); err != nil {
-		return nil, err
+	xgb, err := xgb.New(events.New(wm))
+	if err != nil {
+		log.Fatal(err)
 	}
+	defer xgb.Destroy()
+
+	wm.AddWorkspace(workspace.New("1", tiling.New(rect.New(0, 0, 1024, 768))))
+
+	xgb.EnterMain()
 }

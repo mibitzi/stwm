@@ -3,10 +3,10 @@ package wm
 import (
 	"errors"
 
-	"github.com/mibitzi/stwm/entities"
+	"github.com/mibitzi/stwm/entities/workspace"
 )
 
-func (wm *WM) AddWorkspace(ws entities.Workspace) error {
+func (wm *WM) AddWorkspace(ws *workspace.Workspace) error {
 	if wm.HasWorkspace(ws.Id()) {
 		return errors.New("wm: already added this workspace")
 	}
@@ -15,6 +15,7 @@ func (wm *WM) AddWorkspace(ws entities.Workspace) error {
 
 	if wm.CurWs == nil {
 		wm.CurWs = ws
+		wm.CurWs.Show()
 	}
 
 	return nil

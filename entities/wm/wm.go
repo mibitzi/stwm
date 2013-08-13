@@ -1,19 +1,20 @@
 package wm
 
 import (
-	"github.com/mibitzi/stwm/entities"
+	"github.com/mibitzi/stwm/entities/client"
+	"github.com/mibitzi/stwm/entities/workspace"
 )
 
 type WM struct {
-	Clients    []entities.Client
-	CurWs      entities.Workspace
-	Workspaces []entities.Workspace
+	Clients    []*client.Client
+	CurWs      *workspace.Workspace
+	Workspaces []*workspace.Workspace
 }
 
 func New() (*WM, error) {
 	wm := &WM{
-		Clients:    make([]entities.Client, 0),
-		Workspaces: make([]entities.Workspace, 0),
+		Clients:    make([]*client.Client, 0),
+		Workspaces: make([]*workspace.Workspace, 0),
 	}
 
 	return wm, nil

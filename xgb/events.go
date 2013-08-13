@@ -1,24 +1,28 @@
-package stwm
+package xgb
 
 import (
-	"fmt"
+	//"fmt"
 	"log"
-	"strings"
+	//"strings"
 
 	"github.com/BurntSushi/xgbutil"
-	"github.com/BurntSushi/xgbutil/keybind"
+	//"github.com/BurntSushi/xgbutil/keybind"
 	"github.com/BurntSushi/xgbutil/xevent"
 
-	"github.com/mibitzi/stwm/wm"
+	"github.com/mibitzi/stwm/window"
 )
 
-func setupEvents(wm *wm.WM) {
+type Events interface {
+	MapRequest(window.Window) error
+}
+
+func (xgb *Xgb) setupEvents() {
 	xevent.MapRequestFun(func(xu *xgbutil.XUtil, ev xevent.MapRequestEvent) {
-		log.Printf("MapRequestEvent: %d\n", ev.Window)
-		/*if err := wm.Manage(ev.Window); err != nil {
+		win := window.New(xu, ev.Window)
+		if err := xgb.events.MapRequest(win); err != nil {
 			log.Print(err)
-		}*/
-	}).Connect(wm.X, wm.X.RootWin())
+		}
+	}).Connect(xgb.X, xgb.X.RootWin())
 
 	//wm.setupKeys()
 }

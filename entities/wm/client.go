@@ -2,13 +2,17 @@ package wm
 
 import (
 	"errors"
-	"github.com/mibitzi/stwm/entities"
+	"github.com/mibitzi/stwm/entities/client"
 )
 
 // Manage adds a new managed client to this wm.
-func (wm *WM) Manage(client entities.Client) error {
+func (wm *WM) Manage(client *client.Client) error {
 	if wm.HasClient(client.Id()) {
-		return errors.New("client: already created a client with this id")
+		return errors.New("manage: already managing a client with this id")
+	}
+
+	if len(wm.Workspaces) == 0 {
+		return errors.New("manage: no workspaces available to manage client")
 	}
 
 	wm.Clients = append(wm.Clients, client)

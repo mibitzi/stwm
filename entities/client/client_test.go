@@ -15,3 +15,13 @@ func TestNew(t *testing.T) {
 	assert.NotNil(t, client, "new: New client")
 	assert.Equal(t, client.Id(), win.Id(), "new: Client id")
 }
+
+func TestShowHide(t *testing.T) {
+	win := test.NewWindow()
+	client, _ := New(win)
+	assert.False(t, client.IsVisible(), "initial IsVisible()")
+	client.Show()
+	assert.True(t, client.IsVisible(), "IsVisible()")
+	client.Hide()
+	assert.False(t, client.IsVisible(), "IsVisible()")
+}
