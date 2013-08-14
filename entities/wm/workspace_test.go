@@ -16,5 +16,5 @@ func TestAddWorkspace(t *testing.T) {
 	assert.NoError(t, wm.AddWorkspace(ws), "wm.AddWorkspace")
 	assert.True(t, wm.HasWorkspace("1"), "wm.HasWorkspace")
 	assert.Equal(t, ws, wm.CurWs, "wm.CurWs")
-	assert.True(t, wm.CurWs.IsVisible(), "wm.CurWs.IsVisible")
+	assert.True(t, wm.CurWs.Visible(), "wm.CurWs.IsVisible")
 }

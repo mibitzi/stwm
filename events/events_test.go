@@ -9,8 +9,8 @@ import (
 	"github.com/mibitzi/stwm/entities/workspace"
 	"github.com/mibitzi/stwm/layout/tiling"
 	"github.com/mibitzi/stwm/rect"
+	"github.com/mibitzi/stwm/test/client"
 	"github.com/mibitzi/stwm/test/commands"
-	"github.com/mibitzi/stwm/test/window"
 )
 
 func TestMapRequest(t *testing.T) {
@@ -20,9 +20,9 @@ func TestMapRequest(t *testing.T) {
 
 	ev := New(wm, commands.New())
 
-	win := window.New()
-	assert.NoError(t, ev.MapRequest(win), "MapRequest")
-	assert.True(t, wm.HasClient(win.Id()), "wm.HasClient")
+	client := client.New()
+	ev.MapRequest(client)
+	assert.True(t, wm.HasClient(client.Id()), "wm.HasClient")
 }
 
 func TestUnmanage(t *testing.T) {
@@ -31,8 +31,8 @@ func TestUnmanage(t *testing.T) {
 	wm.AddWorkspace(ws)
 
 	ev := New(wm, commands.New())
-	win := window.New()
-	ev.MapRequest(win)
-	ev.Unmanage(win.Id())
-	assert.False(t, wm.HasClient(win.Id()), "wm.HasClient")
+	client := client.New()
+	ev.MapRequest(client)
+	ev.Unmanage(client.Id())
+	assert.False(t, wm.HasClient(client.Id()), "wm.HasClient")
 }

@@ -2,7 +2,6 @@ package tiling
 
 import (
 	"errors"
-	"math"
 
 	"github.com/mibitzi/stwm/layout"
 	"github.com/mibitzi/stwm/rect"
@@ -23,7 +22,7 @@ type Tiling struct {
 	columns []*Column
 }
 
-func New(geom rect.Rect) *Tiling {
+func New(geom rect.Rect) layout.Layout {
 	tiling := &Tiling{
 		Geom:    geom,
 		columns: make([]*Column, 1),
@@ -38,27 +37,76 @@ func New(geom rect.Rect) *Tiling {
 }
 
 func (tiling *Tiling) AddClient(client layout.Client) error {
-	if err := tiling.insertClient(client, 0); err != nil {
+	row := &Row{client: client}
+	if err := tiling.insertRow(0, row); err != nil {
 		return err
 	}
-
 	tiling.apply()
 
 	return nil
 }
 
+func (tiling *Tiling) InsertClient(client layout.Client, colIdx int,
+	rowIdx int) error {
+	return tiling.insertRowAfter(colIdx, rowIdx, &Row{client: client})
+}
+
 func (tiling *Tiling) RemoveClient(client layout.Client) error {
-	if colIdx, rowIdx, err := tiling.findClient(client.Id()); err != nil {
+	if col, row, err := tiling.findClient(client.Id()); err != nil {
 		return err
 	} else {
-		col := tiling.columns[colIdx]
-		col.rows[rowIdx] = col.rows[len(col.rows)-1]
-		col.rows = col.rows[:len(col.rows)-1]
-		col.useFreeSpace(tiling.Geom.Height())
-
+		if err := tiling.removeRow(col, row); err != nil {
+			return err
+		}
 		tiling.apply()
 		return nil
 	}
+}
+
+func (tiling *Tiling) removeRow(colIdx, rowIdx int) error {
+	if colIdx < 0 || colIdx >= int(len(tiling.columns)) {
+		return errors.New("tiling: column index out of bound")
+	}
+
+	col := tiling.columns[colIdx]
+	col.rows = append(col.rows[:rowIdx], col.rows[rowIdx+1:]...)
+
+	if len(tiling.columns) > 1 && len(col.rows) == 0 {
+		tiling.columns = append(tiling.columns[:colIdx],
+			tiling.columns[colIdx+1:]...)
+		tiling.useFreeColumnSpace()
+	} else {
+		col.useFreeSpace(tiling.Geom.Height())
+	}
+
+	return nil
+}
+
+func (tiling *Tiling) insertRowAfter(colIdx, rowIdx int, row *Row) error {
+	if colIdx < 0 || colIdx >= len(tiling.columns) {
+		return errors.New("tiling: column index out of bound")
+	}
+
+	col := tiling.columns[colIdx]
+
+	row.size = int(float64(tiling.Geom.Height()) / float64(len(col.rows)+1))
+
+	col.makeSpace(row.size)
+
+	if rowIdx < 0 || rowIdx >= len(col.rows)-1 {
+		col.rows = append(col.rows, row)
+	} else {
+		idx := rowIdx + 1
+		col.rows = append(col.rows, nil)
+		copy(col.rows[idx+1:], col.rows[idx:])
+		col.rows[idx] = row
+	}
+
+	return nil
+}
+
+func (tiling *Tiling) insertRow(colIdx int, row *Row) error {
+	return tiling.insertRowAfter(colIdx, -1, row)
 }
 
 func (tiling *Tiling) HasClient(id uint) bool {
@@ -76,25 +124,7 @@ func (tiling *Tiling) findClient(id uint) (int, int, error) {
 			}
 		}
 	}
-	return -1, -1, errors.New("tiling: client not found")
-}
-
-func (tiling *Tiling) insertClient(client layout.Client, column int) error {
-	if column < 0 || column >= len(tiling.columns) {
-		return errors.New("tiling: column index out of bound")
-	}
-
-	col := tiling.columns[column]
-
-	row := &Row{
-		size:   tiling.Geom.Height() / (len(col.rows) + 1),
-		client: client,
-	}
-
-	col.makeSpace(row.size)
-	col.rows = append(col.rows, row)
-
-	return nil
+	return 0, 0, errors.New("tiling: client not found")
 }
 
 func (tiling *Tiling) apply() {
@@ -109,8 +139,17 @@ func (tiling *Tiling) apply() {
 	}
 }
 
+func (tiling *Tiling) makeColumnSpace(space int) {
+	min := int(float64(space) / float64(len(tiling.columns)))
+
+	for i, col := range tiling.columns {
+		col.size -= min
+		col.size -= space % (i + 1)
+	}
+}
+
 func (col *Column) makeSpace(space int) {
-	min := int(math.Floor(float64(space) / float64(len(col.rows))))
+	min := int(float64(space) / float64(len(col.rows)))
 
 	for i, row := range col.rows {
 		row.size -= min
@@ -124,9 +163,16 @@ func (col *Column) useFreeSpace(total int) {
 		usedSpace += row.size
 	}
 
-	freeSpace := float64(total - usedSpace)
+	freeSpace := total - usedSpace
+	col.makeSpace(-freeSpace)
+}
 
-	for _, row := range col.rows {
-		row.size += int(float64(row.size)/float64(usedSpace)*freeSpace + 0.5)
+func (tiling *Tiling) useFreeColumnSpace() {
+	usedSpace := 0
+	for _, col := range tiling.columns {
+		usedSpace += col.size
 	}
+
+	freeSpace := tiling.Geom.Width() - usedSpace
+	tiling.makeColumnSpace(-freeSpace)
 }

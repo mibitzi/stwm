@@ -4,10 +4,11 @@ import (
 	"errors"
 
 	"github.com/mibitzi/stwm/entities/client"
+	"github.com/mibitzi/stwm/entities/workspace"
 )
 
 // Manage adds a new managed client to this wm.
-func (wm *WM) Manage(client *client.Client) error {
+func (wm *WM) Manage(client client.Client) error {
 	if wm.HasClient(client.Id()) {
 		return errors.New("wm.manage: already managing a client with this id")
 	}
@@ -25,6 +26,8 @@ func (wm *WM) Manage(client *client.Client) error {
 	}
 
 	wm.Clients = append(wm.Clients, client)
+
+	wm.Focus(client)
 
 	return nil
 }
@@ -60,4 +63,23 @@ func (wm *WM) findClient(id uint) (int, error) {
 		}
 	}
 	return -1, errors.New("wm: client not found")
+}
+
+// ClientWorkspace returns the workspace which this client is on.
+func (wm *WM) ClientWorkspace(id uint) (*workspace.Workspace, error) {
+	for _, ws := range wm.Workspaces {
+		if ws.HasClient(id) {
+			return ws, nil
+		}
+	}
+	return nil, errors.New("wm: client not found")
+}
+
+func (wm *WM) Focus(client client.Client) {
+	if wm.Focused != nil {
+		wm.Focused.Unfocus()
+	}
+
+	wm.Focused = client
+	client.Focus()
 }

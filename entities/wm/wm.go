@@ -6,14 +6,15 @@ import (
 )
 
 type WM struct {
-	Clients    []*client.Client
+	Clients    []client.Client
+	Focused    client.Client
 	CurWs      *workspace.Workspace
 	Workspaces []*workspace.Workspace
 }
 
 func New() (*WM, error) {
 	wm := &WM{
-		Clients:    make([]*client.Client, 0),
+		Clients:    make([]client.Client, 0),
 		Workspaces: make([]*workspace.Workspace, 0),
 	}
 

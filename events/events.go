@@ -3,7 +3,7 @@ package events
 import (
 	"github.com/mibitzi/stwm/entities/client"
 	"github.com/mibitzi/stwm/entities/wm"
-	"github.com/mibitzi/stwm/window"
+	"github.com/mibitzi/stwm/log"
 )
 
 type Events struct {
@@ -22,26 +22,21 @@ func New(wm *wm.WM, cmd CommandHandler) *Events {
 	}
 }
 
-func (events *Events) MapRequest(win window.Window) error {
-	client, err := client.New(win)
-	if err != nil {
-		return err
+func (events *Events) MapRequest(client client.Client) {
+	if err := events.WM.Manage(client); err != nil {
+		log.Error(err)
 	}
-
-	if err = events.WM.Manage(client); err != nil {
-		return err
-	}
-
-	return nil
 }
 
-func (events *Events) Unmanage(id uint) error {
+func (events *Events) Unmanage(id uint) {
 	if err := events.WM.Unmanage(id); err != nil {
-		return err
+		log.Error(err)
 	}
-	return nil
 }
 
-func (events *Events) Command(str string) error {
-	return events.Cmd.Execute(str)
+func (events *Events) Command(str string) {
+	log.Debug("events: got command", str)
+	if err := events.Cmd.Execute(str); err != nil {
+		log.Error(err)
+	}
 }

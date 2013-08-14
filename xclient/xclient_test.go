@@ -1,4 +1,4 @@
-package xwindow
+package xclient
 
 import (
 	"testing"
@@ -21,37 +21,37 @@ func TestWindowRunner(t *testing.T) {
 }
 
 func testId(t *testing.T, xu *xgbutil.XUtil) {
-	xwin, _ := xwindow.Create(xu, xu.RootWin())
-	win := New(xu, xwin.Id, events.New())
+	win, _ := xwindow.Create(xu, xu.RootWin())
+	client := New(xu, win.Id, events.New())
 
-	assert.Equal(t, xwin.Id, win.Id(), "win.Id")
+	assert.Equal(t, win.Id, client.Id(), "win.Id")
 }
 
 func testManage(t *testing.T, xu *xgbutil.XUtil) {
-	xwin, _ := xwindow.Create(xu, xu.RootWin())
-	win := New(xu, xwin.Id, events.New())
+	win, _ := xwindow.Create(xu, xu.RootWin())
+	client := New(xu, win.Id, events.New())
 
-	assert.NoError(t, win.Manage(), "win.Manage")
+	assert.NoError(t, client.Manage(), "win.Manage")
 }
 
 func testShowHide(t *testing.T, xu *xgbutil.XUtil) {
-	xwin, _ := xwindow.Create(xu, xu.RootWin())
-	win := New(xu, xwin.Id, events.New())
+	win, _ := xwindow.Create(xu, xu.RootWin())
+	client := New(xu, win.Id, events.New())
 
-	win.Hide()
-	win.Show()
-	assert.True(t, win.IsVisible(), "win.IsVisible")
-	win.Hide()
-	assert.False(t, win.IsVisible(), "win.IsVisible")
+	client.Hide()
+	client.Show()
+	assert.True(t, client.Visible(), "win.IsVisible")
+	client.Hide()
+	assert.False(t, client.Visible(), "win.IsVisible")
 }
 
 func testGeom(t *testing.T, xu *xgbutil.XUtil) {
-	xwin, _ := xwindow.Create(xu, xu.RootWin())
-	win := New(xu, xwin.Id, events.New())
+	win, _ := xwindow.Create(xu, xu.RootWin())
+	client := New(xu, win.Id, events.New())
 
 	geom := rect.New(100, 200, 500, 600)
-	win.SetGeom(geom)
-	newGeom := win.Geom()
+	client.SetGeom(geom)
+	newGeom := client.Geom()
 	assert.Equal(t, geom.X(), newGeom.X(), "x")
 	assert.Equal(t, geom.Y(), newGeom.Y(), "y")
 	assert.Equal(t, geom.Width(), newGeom.Width(), "width")

@@ -6,6 +6,7 @@ import (
 	"github.com/mibitzi/stwm/entities/wm"
 	"github.com/mibitzi/stwm/entities/workspace"
 	"github.com/mibitzi/stwm/events"
+	"github.com/mibitzi/stwm/keybind"
 	"github.com/mibitzi/stwm/layout/tiling"
 	"github.com/mibitzi/stwm/log"
 	"github.com/mibitzi/stwm/xgb"
@@ -18,20 +19,27 @@ func main() {
 
 	cfg := config.New()
 
+	// Entities
 	wm, err := wm.New()
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer wm.Destroy()
 
-	cmd := commands.New(wm)
-	ev := events.New(wm, cmd)
+	// Command and event handler
+	commands := commands.New(wm)
+	events := events.New(wm, commands)
 
-	xgb, err := xgb.New(ev, cfg)
+	// xgb
+	xgb, err := xgb.New(events, cfg)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer xgb.Destroy()
+
+	// Keybinds
+	keys := keybinds.New(xgb.X, events, cfg.Keybinds)
+	defer keys.Destroy()
 
 	wm.AddWorkspace(workspace.New("1", tiling.New(xgb.ScreenRect())))
 

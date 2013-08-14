@@ -13,6 +13,8 @@ func TestParseContents(t *testing.T) {
 		"font Droid Sans Mono\n"
 
 	config := New()
+	config.Keybinds = make(map[string]string)
+
 	assert.NoError(t, config.parseContents([]byte(contents)), "Parse contents")
 	assert.Equal(t, len(config.Keybinds), 2, "Number of keybinds parsed")
 

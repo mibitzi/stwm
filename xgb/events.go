@@ -1,35 +1,33 @@
 package xgb
 
 import (
-	"fmt"
-	"strings"
+	//"fmt"
+	//"strings"
 
 	"github.com/BurntSushi/xgbutil"
-	"github.com/BurntSushi/xgbutil/keybind"
 	"github.com/BurntSushi/xgbutil/xevent"
 
-	"github.com/mibitzi/stwm/log"
-	"github.com/mibitzi/stwm/window"
-	"github.com/mibitzi/stwm/window/xwindow"
+	"github.com/mibitzi/stwm/entities/client"
+	//"github.com/mibitzi/stwm/log"
+	"github.com/mibitzi/stwm/xclient"
 )
 
 type Events interface {
-	MapRequest(window.Window) error
-	xwindow.Events
-	Command(string) error
+	MapRequest(client.Client)
+	xclient.Events
+	//Command(string)
 }
 
 func (xgb *Xgb) setupEvents() {
 	xevent.MapRequestFun(func(xu *xgbutil.XUtil, ev xevent.MapRequestEvent) {
-		win := xwindow.New(xgb.X, ev.Window, xgb.Events)
-		if err := xgb.Events.MapRequest(win); err != nil {
-			log.Error(err)
-		}
+		client := xclient.New(xgb.X, ev.Window, xgb.Events)
+		xgb.Events.MapRequest(client)
 	}).Connect(xgb.X, xgb.X.RootWin())
 
-	xgb.setupKeys()
+	//xgb.setupKeys()
 }
 
+/*
 func (xgb *Xgb) setupKeys() error {
 	keybind.Initialize(xgb.X)
 
@@ -59,8 +57,8 @@ func (xgb *Xgb) keyPressFun(xu *xgbutil.XUtil, e xevent.KeyPressEvent) {
 	keys = strings.ToLower(keys)
 
 	if command, ok := xgb.Config.Keybinds[keys]; ok {
-		if err := xgb.Events.Command(command); err != nil {
-			log.Error(err)
-		}
+		xgb.Events.Command(command)
+	} else {
+		log.Warn("xgb: received key without keybind:", keys)
 	}
-}
+}*/

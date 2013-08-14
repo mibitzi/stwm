@@ -9,7 +9,7 @@ import (
 
 type Workspace struct {
 	id      string
-	clients []*client.Client
+	clients []client.Client
 	tiling  layout.Layout
 	visible bool
 }
@@ -26,7 +26,7 @@ func (ws *Workspace) Id() string {
 
 // AddClient adds a new client to this workspace and assigns it to a suitable
 // layout.
-func (ws *Workspace) AddClient(client *client.Client) error {
+func (ws *Workspace) AddClient(client client.Client) error {
 	if ws.HasClient(client.Id()) {
 		return errors.New("workspace: already added this client")
 	}
@@ -35,7 +35,7 @@ func (ws *Workspace) AddClient(client *client.Client) error {
 
 	ws.tiling.AddClient(client)
 
-	if ws.IsVisible() {
+	if ws.Visible() {
 		client.Show()
 	}
 
@@ -43,7 +43,7 @@ func (ws *Workspace) AddClient(client *client.Client) error {
 }
 
 // RemoveClients removes a client from this workspace.
-func (ws *Workspace) RemoveClient(client *client.Client) error {
+func (ws *Workspace) RemoveClient(client client.Client) error {
 	idx, err := ws.findClient(client.Id())
 	if err != nil {
 		return err
@@ -77,7 +77,7 @@ func (ws *Workspace) findClient(id uint) (int, error) {
 }
 
 // IsVisible returns true if this workspace is currently visible.
-func (ws *Workspace) IsVisible() bool {
+func (ws *Workspace) Visible() bool {
 	return ws.visible
 }
 
@@ -97,4 +97,9 @@ func (ws *Workspace) Hide() {
 	for _, c := range ws.clients {
 		c.Hide()
 	}
+}
+
+// MoveClient moves a client into a direction.
+func (ws *Workspace) MoveClient(client client.Client, dir string) error {
+	return ws.tiling.Move(client, layout.Direction(dir))
 }

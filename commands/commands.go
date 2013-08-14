@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/mibitzi/stwm/entities/wm"
+	"github.com/mibitzi/stwm/log"
 )
 
 type HandlerMap map[string]func(args string) error
@@ -22,6 +23,7 @@ func New(wm *wm.WM) *Commands {
 	}
 
 	cmd.Handler["exec"] = cmd.CmdExec
+	cmd.Handler["move"] = cmd.CmdMove
 
 	return cmd
 }
@@ -41,4 +43,18 @@ func (cmd *Commands) CmdExec(args string) error {
 		return err
 	}
 	return nil
+}
+
+func (cmd *Commands) CmdMove(args string) error {
+	focused := cmd.WM.Focused
+	if focused == nil {
+		log.Debug("command: called move without focused window")
+		return nil
+	}
+
+	if ws, err := cmd.WM.ClientWorkspace(cmd.WM.Focused.Id()); err != nil {
+		return err
+	} else {
+		return ws.MoveClient(focused, strings.ToLower(args))
+	}
 }
